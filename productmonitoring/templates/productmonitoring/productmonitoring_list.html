@@ -1,0 +1,40 @@
+
+{% load staticfiles i18n crispy_forms_tags %}
+
+{% block crumbs %}
+{% block page_content %}
+<div class="row" >
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <table class="table table-hover" id="dataTables">
+        <thead>
+            <tr>
+                <th>Number</th>
+                <th class="text-left">Page Link</th>
+                <th class="text-left">Name</th>
+                <th class="text-left">Price</th>
+
+            </tr>
+        </thead>
+        <tbody>
+
+                {% for q in object_list %}
+            <tr>
+                <td>{{forloop.counter}}</td>
+                <td class="text-left"> {{q.pageLink.pageLink }}</td>
+                <td class="text-center">{{q.name }}</td>
+                <td class="text-center">{{q.price }}</td>
+
+
+            </tr>
+        {% endfor %}
+        </tbody>
+</table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
+{% endblock %}

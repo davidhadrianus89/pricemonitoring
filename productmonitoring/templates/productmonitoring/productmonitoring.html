@@ -1,0 +1,23 @@
+{% load staticfiles i18n crispy_forms_tags %}
+
+{% block crumbs %}
+<h6 class="page-active">{% trans "Product Monitoring" %}</h6>
+{% block page_content %}
+<div class="row" >
+    <div class="col-md-12">
+        <h3 class="page-header heading">{% trans "Contact Us" %}</h3>
+        <p>{% trans "Please use the form below to submit information to us." %}</p>
+        <br>
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <form method="post" action="">
+                    {{ form|crispy }}
+                    {% csrf_token %}
+                    <button class="btn btn-primary btn-block" type="submit">{% trans "Submit" %}</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% endblock %}
