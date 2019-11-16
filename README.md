@@ -14,4 +14,18 @@
 
 - pip install -r requirements
 
+- cd /<pricemonitoring directory>/price_scrapper
+
+- scrapyd
+
+- cd ../
+
+- python manage.py runserver 0.0.0.0:8080
+
+- goto http://localhost:8080/productmonitoring/
+
+- submit url
+
+- see result on http://localhost:8080/productmonitoring/list
+
 
