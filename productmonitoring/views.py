@@ -32,6 +32,7 @@ def index(request):
             try:
                 crawl_post(request, form.cleaned_data['pageLink'])
             except Exception as e:
+                print str(e)
                 pass
             return redirect('productmonitoring:product_list')
     else:

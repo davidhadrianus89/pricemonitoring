@@ -25,7 +25,6 @@ class FabelioScraper(CrawlSpider):
             product_page = ProductPage.objects.filter(pageLink=self.url).first()
             item['pageLink'] = product_page
             item['name'] = line.xpath('//div[@class = "page-title__secondary"]//text()').extract_first()
-            item['price'] = line.xpath('//*[@id="product-price-3975"]/span//text()').extract_first()
-            item['old_price'] = line.xpath('//*[@id="old-price-3975"]/span//text()').extract_first()
+            item['price'] = line.xpath('//span[@class="price"]/text()').extract_first()
+            item['old_price'] = line.xpath('//span[@class="price"]/text()').extract()[1]
             yield item
-

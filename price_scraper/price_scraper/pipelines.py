@@ -14,6 +14,8 @@ class PriceScraperPipeline(object):
             product = Product.objects.get(pageLink__pageLink=item['pageLink'])
             instance = item.save(commit=False)
             instance.pk = product.pk
+            instance.price = product.price
+            instance.old_price = product.old_price
         except Product.DoesNotExist:
             pass
         item.save()
