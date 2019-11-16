@@ -9,18 +9,17 @@ from django_extensions.db.models import TimeStampedModel
 
 
 class ProductPage(TimeStampedModel):
-    uniqueId = models.CharField(max_length=255)
     pageLink = models.TextField()
 
     def __str__(self):
-        return self.uniqueId
+        return self.pageLink
 
 
 class Product(TimeStampedModel):
     pageLink = models.ForeignKey(ProductPage)
-    category = models.CharField(max_length=255, null=True, blank=True)
     name = models.CharField(max_length=255, null=True, blank=True)
     price = models.CharField(max_length=255, null=True, blank=True)
+    old_price = models.CharField(max_length=255, null=True, blank=True)
 
     @property
     def to_dict(self):
@@ -33,12 +32,12 @@ class Product(TimeStampedModel):
         return data
 
     def __str__(self):
-        return self.pageLink.uniqueId
+        return self.pageLink.pageLink
 
 
 class ProductDetail(TimeStampedModel):
     product = models.ForeignKey(Product)
-    currentPrice = models.DecimalField(max_digits=12, decimal_places=2)
+    image = models.CharField(max_length=255, null=True, blank=True)
     descriptions = models.TextField(blank=True)
 
 

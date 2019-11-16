@@ -16,19 +16,22 @@ from scrapyd_api import ScrapydAPI
 
 from .forms import ProductPageForm
 
-from .models import Product
+from .models import Product, ProductPage
 
 
 def index(request):
     if request.method == "POST":
         form = ProductPageForm(request.POST)
         if form.is_valid():
-            contact = form.save(commit=False)
-            contact.save()
             try:
-                crawl(request, form.cleaned_data['pageLink'])
+                instance = ProductPage.objects.get(pageLink=form.cleaned_data['pageLink'])
+                instance.pageLink = form.cleaned_data['pageLink']
+                instance.save()
+            except ProductPage.DoesNotExist:
+                form.save()
+            try:
+                crawl_post(request, form.cleaned_data['pageLink'])
             except Exception as e:
-                print 'GGGGG', str(e)
                 pass
             return redirect('productmonitoring:product_list')
     else:
@@ -60,67 +63,18 @@ scrapyd = ScrapydAPI('http://localhost:6800')
 
 @csrf_exempt
 @require_http_methods(['POST', 'GET'])
-def crawl(request, url):
-    if request.method == 'POST':
-        domain = urlparse(url).netloc
-        unique_id = str(uuid4())
+def crawl_post(request, url):
+    domain = urlparse(url).netloc
 
-        settings = {
-            'unique_id': unique_id,
-            'USER_AGENT': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
-        }
-        try:
-            task = scrapyd.schedule('default', 'FabelioScraper', settings=settings, url=url, domain=domain)
-            print task
-        except SchedulingError as e:
-            return JsonResponse(
-                {'error': e},
-                status=HTTPException
-            )
-        print JsonResponse({'task_id': task, 'unique_id': unique_id, 'status': 'started'})
-        return JsonResponse({'task_id': task, 'unique_id': unique_id, 'status': 'started'})
-    elif request.method == 'GET':
-        try:
-            task_id = request.GET.get('task_id', None)
-        except ValueError as e:
-            return JsonResponse(
-                {'error': e},
-                status=HTTPException
-            )
-        try:
-            unique_id = request.GET.get('unique_id', None)[:-1]
-        except ValueError as e:
-            return JsonResponse(
-                {'error': e},
-                status=HTTPException
-            )
-        status = scrapyd.job_status('default', task_id)
-        if status == 'finished':
-            pass
-            try:
-                item = ScrapyItem.objects.filter(unique_id=unique_id)
-                if not item:
-                    return JsonResponse(
-                        {'error': 'There is no data'},
-                        status=HTTPException
-                    )
-                dict_list = []
-                for i in list(item):
-                    dict_data = {
-                        'url': i.url,
-                        'title': i.title,
-                        'contents': i.contents,
-                        'published_date': i.published_date.strftime('%Y-%m-%d %H:%M'),
-                        'views': i.views,
-                        'recommends': i.recommends,
-                        'date': i.date.strftime('%Y-%m-%d %H:%M')
-                    }
-                    dict_list.append(dict_data)
-                data = {'data': dict_list}
-                return JsonResponse(data)
-            except Exception as e:
-                return JsonResponse(
-                    {'error': str(e)},
-                )
-        else:
-            return JsonResponse({'status': status})
+    settings = {
+        'USER_AGENT': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
+    }
+    try:
+        task = scrapyd.schedule('default', 'FabelioScraper', settings=settings, url=url, domain=domain)
+        print task
+    except SchedulingError as e:
+        return JsonResponse(
+            {'error': e},
+            status=HTTPException
+        )
+    return JsonResponse({'task_id': task, 'status': 'started'})
