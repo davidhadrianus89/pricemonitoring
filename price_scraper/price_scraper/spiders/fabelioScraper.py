@@ -19,7 +19,7 @@ class FabelioScraper(CrawlSpider):
         super(FabelioScraper, self).__init__(*args, **kwargs)
 
     def parse(self, response):
-        data = response.xpath('//div[@class = "product-info-main"]')
+        data = response.xpath('//div[@class = "columns"]')
         for line in data:
             item = PriceScraperItem()
             product_page = ProductPage.objects.filter(pageLink=self.url).first()
@@ -28,3 +28,4 @@ class FabelioScraper(CrawlSpider):
             item['price'] = line.xpath('//span[@class="price"]/text()').extract_first()
             item['old_price'] = line.xpath('//span[@class="price"]/text()').extract()[1]
             yield item
+
