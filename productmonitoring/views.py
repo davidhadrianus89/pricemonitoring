@@ -1,5 +1,6 @@
-from httplib import HTTPException
-from urlparse import urlparse
+import http
+
+from urllib.parse import urlparse
 from uuid import uuid4
 
 import scrapyd
@@ -32,7 +33,7 @@ def index(request):
             try:
                 crawl_post(request, form.cleaned_data['pageLink'])
             except Exception as e:
-                print str(e)
+                print (str(e))
                 pass
             return redirect('productmonitoring:product_list')
     else:
@@ -72,10 +73,10 @@ def crawl_post(request, url):
     }
     try:
         task = scrapyd.schedule('default', 'FabelioScraper', settings=settings, url=url, domain=domain)
-        print task
+        print (task)
     except SchedulingError as e:
         return JsonResponse(
             {'error': e},
-            status=HTTPException
+            status=http.client.HTTPException
         )
     return JsonResponse({'task_id': task, 'status': 'started'})

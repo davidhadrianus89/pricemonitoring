@@ -19,6 +19,7 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'pricemonitoring.settings'
 django.setup()
 BOT_NAME = 'price_scraper'
 
+USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36'
 SPIDER_MODULES = ['price_scraper.spiders']
 NEWSPIDER_MODULE = 'price_scraper.spiders'
 ROBOTSTXT_OBEY = True
@@ -54,9 +55,11 @@ ROBOTSTXT_OBEY = True
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
-# DOWNLOADER_MIDDLEWARES = {
-#    'price_scraper.middlewares.PriceScraperDownloaderMiddleware': 543,
-# }
+DOWNLOADER_MIDDLEWARES = {
+    'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
+    'scrapy_user_agents.middlewares.RandomUserAgentMiddleware': 400,
+    'price_scraper.middlewares.PriceScraperDownloaderMiddleware': 543,
+}
 
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
@@ -92,3 +95,5 @@ ROBOTSTXT_OBEY = True
 # HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
 ITEM_PIPELINES = {"price_scraper.pipelines.PriceScraperPipeline": 300}
+
+
